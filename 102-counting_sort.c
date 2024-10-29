@@ -1,47 +1,66 @@
 #include "sort.h"
-#include <stdlib.h>
 
 /**
- * counting_sort - Sorts an array of integers in ascending order,
- * using Counting algorithm.
- * @array: Array to be sorted.
- * @size: Size of the array.
+ * get_max - Get the maximum value in an array of integers.
+ * @array: An array of integers.
+ * @size: The size of the array.
+ *
+ * Return: The maximum integer in the array.
+ */
+int get_max(int *array, int size)
+{
+	int max, i;
+
+	for (max = array[0], i = 1; i < size; i++)
+	{
+		if (array[i] > max)
+			max = array[i];
+	}
+
+	return (max);
+}
+
+/**
+ * counting_sort - Sort an array of integers in ascending order,
+ * using the counting sort algorithm.
+ * @array: An array of integers.
+ * @size: The size of the array.
  */
 void counting_sort(int *array, size_t size)
 {
-	size_t i;
-	int max = 0;
-	int *count, *output;
+	int *count, *sorted, max, i;
 
-	if (size < 2)
+	if (array == NULL || size < 2)
 		return;
 
-	for (i = 0; i < size; i++)
-		if (array[i] > max)
-			max = array[i];
-	count = malloc((max + 1) * sizeof(int));
-
-	if (!count)
+	sorted = malloc(sizeof(int) * size);
+	if (sorted == NULL)
 		return;
-	output = malloc(size * sizeof(int));
-
-	if (!output)
+	max = get_max(array, size);
+	count = malloc(sizeof(int) * (max + 1));
+	if (count == NULL)
 	{
-		free(count);
-		return; }
-	for (i = 0; i <= (size_t)max; i++)
+		free(sorted);
+		return;
+	}
+
+	for (i = 0; i < (max + 1); i++)
 		count[i] = 0;
-	for (i = 0; i < size; i++)
-		count[array[i]]++;
-	for (i = 1; i <= (size_t)max; i++)
+	for (i = 0; i < (int)size; i++)
+		count[array[i]] += 1;
+	for (i = 0; i < (max + 1); i++)
 		count[i] += count[i - 1];
 	print_array(count, max + 1);
-	for (i = size; i > 0; i--)
+
+	for (i = 0; i < (int)size; i++)
 	{
-		output[count[array[i - 1]] - 1] = array[i - 1];
-		count[array[i - 1]]--; }
-	for (i = 0; i < size; i++)
-		array[i] = output[i];
+		sorted[count[array[i]] - 1] = array[i];
+		count[array[i]] -= 1;
+	}
+
+	for (i = 0; i < (int)size; i++)
+		array[i] = sorted[i];
+
+	free(sorted);
 	free(count);
-	free(output);
 }
