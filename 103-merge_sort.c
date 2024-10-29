@@ -1,78 +1,77 @@
 #include "sort.h"
 
 /**
- * merge - Merges two subarrays of array.
- * @array: Original array.
- * @temp: Temporary array for merging.
- * @left: Left start index.
- * @mid: Middle index.
- * @right: Right end index.
+ * merge_subarr - Sort a subarray of integers.
+ * @subarr: A subarray of an array of integers to sort.
+ * @buff: A buffer to store the sorted subarray.
+ * @front: The front index of the array.
+ * @mid: The middle index of the array.
+ * @back: The back index of the array.
  */
-void merge(int *array, int *temp, size_t left, size_t mid, size_t right)
+void merge_subarr(int *subarr, int *buff, size_t front, size_t mid,
+		size_t back)
 {
-	size_t i = left, j = mid, k = left;
+	size_t i, j, k = 0;
 
-	while (i < mid && j <= right)
-	{
-		if (array[i] <= array[j])
-			temp[k++] = array[i++];
-		else
-			temp[k++] = array[j++]; }
-	while (i < mid)
-		temp[k++] = array[i++];
-
-	while (j <= right)
-		temp[k++] = array[j++];
-	for (i = left; i <= right; i++)
-		array[i] = temp[i];
 	printf("Merging...\n[left]: ");
-	print_array(array + left, mid - left);
+	print_array(subarr + front, mid - front);
+
 	printf("[right]: ");
-	print_array(array + mid, right - mid + 1);
+	print_array(subarr + mid, back - mid);
+
+	for (i = front, j = mid; i < mid && j < back; k++)
+		buff[k] = (subarr[i] < subarr[j]) ? subarr[i++] : subarr[j++];
+	for (; i < mid; i++)
+		buff[k++] = subarr[i];
+	for (; j < back; j++)
+		buff[k++] = subarr[j];
+	for (i = front, k = 0; i < back; i++)
+		subarr[i] = buff[k++];
+
 	printf("[Done]: ");
-	print_array(array + left, right - left + 1);
+	print_array(subarr + front, back - front);
 }
 
 /**
- * merge_sort_recursive - Helper function to implement recursion.
- * @array: Array to sort.
- * @temp: Temporary array for merging.
- * @left: Left index of the subarray.
- * @right: Right index of the subarray.
+ * merge_sort_recursive - Implement the merge sort algorithm through recursion.
+ * @subarr: A subarray of an array of integers to sort.
+ * @buff: A buffer to store the sorted result.
+ * @front: The front index of the subarray.
+ * @back: The back index of the subarray.
  */
-void merge_sort_recursive(int *array, int *temp, size_t left, size_t right)
+void merge_sort_recursive(int *subarr, int *buff, size_t front, size_t back)
 {
 	size_t mid;
 
-	if (left >= right)
-		return;
-
-	mid = left + (right - left) / 2;
-
-	merge_sort_recursive(array, temp, left, mid);
-	merge_sort_recursive(array, temp, mid + 1, right);
-
-	merge(array, temp, left, mid + 1, right);
+	if (back - front > 1)
+	{
+		mid = front + (back - front) / 2;
+		merge_sort_recursive(subarr, buff, front, mid);
+		merge_sort_recursive(subarr, buff, mid, back);
+		merge_subarr(subarr, buff, front, mid, back);
+	}
 }
 
 /**
- * merge_sort - Sorts an array of integers in ascending order,
- * using Merge sort.
- * @array: Array to be sorted.
- * @size: Size of the array.
+ * merge_sort - Sort an array of integers in ascending
+ *              order using the merge sort algorithm.
+ * @array: An array of integers.
+ * @size: The size of the array.
+ *
+ * Description: Implements the top-down merge sort algorithm.
  */
 void merge_sort(int *array, size_t size)
 {
-	int *temp;
+	int *buff;
 
 	if (array == NULL || size < 2)
 		return;
 
-	temp = malloc(sizeof(int) * size);
-
-	if (temp == NULL)
+	buff = malloc(sizeof(int) * size);
+	if (buff == NULL)
 		return;
-	merge_sort_recursive(array, temp, 0, size - 1);
 
-	free(temp);
+	merge_sort_recursive(array, buff, 0, size);
+
+	free(buff);
 }
