@@ -1,4 +1,4 @@
-#ifndef DECK_h
+#ifndef DECK_H
 #define DECK_H
 
 #include <stdlib.h>
