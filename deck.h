@@ -5,6 +5,14 @@
 
 /* Data Structure */
 
+
+/**
+ * enum kind_e - Complete stack of card (suits).
+ * @SPADE: Spades suit.
+ * @HEART: Hearts suit.
+ * @CLUB: Clubs suit
+ * @DIAMOND: Diamondds suit.
+ */
 typedef enum kind_e
 {
 	SPADE = 0,
